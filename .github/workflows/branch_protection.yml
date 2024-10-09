@@ -5,25 +5,21 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write  # Required to update branch protection rules
-  pull-requests: write  # Optional: if you need to create pull requests
-
 jobs:
   set-branch-protection:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
       
       - name: Configure Branch Protection
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  
         run: |
           REPO=${{ github.repository }}
           BRANCH="main"
-          REQUIRED_APPROVALS=1
-          REVIEWERS='["pathania25","manasa-telus","ravicharan-nettyam"]'
+          REQUIRED_APPROVALS=2
           
           # Set branch protection rules using GitHub API
           curl -X PUT -H "Authorization: token $GITHUB_TOKEN" \
