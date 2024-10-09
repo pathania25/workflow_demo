@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - main
-      - '*'
+
+permissions:
+  contents: write  # Required to update branch protection rules
+  pull-requests: write  # Optional: if you need to create pull requests
 
 jobs:
   set-branch-protection:
@@ -15,12 +18,12 @@ jobs:
       
       - name: Configure Branch Protection
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for authentication
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           REPO=${{ github.repository }}
           BRANCH="main"
           REQUIRED_APPROVALS=1
-          REVIEWERS='["pathania25","manasa-telus", "ravicharan-nettyam"]'
+          REVIEWERS='["pathania25","manasa-telus","ravicharan-nettyam"]'
           
           # Set branch protection rules using GitHub API
           curl -X PUT -H "Authorization: token $GITHUB_TOKEN" \
@@ -39,12 +42,6 @@ jobs:
               "users": [],
               "teams": [],
               "apps": []
-            },
-            "required_pull_request_reviews": {
-              "dismiss_stale_reviews": true,
-              "require_code_owner_reviews": false,
-              "required_approving_review_count": $REQUIRED_APPROVALS,
-              "reviewers": $REVIEWERS
             }
           }
           EOF
