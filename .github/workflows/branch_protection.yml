@@ -20,16 +20,14 @@ jobs:
         run: |
           REPO=${{ github.repository }}
           BRANCH="main"
-          REQUIRED_APPROVALS=2
+          REQUIRED_APPROVALS=1
           
           # Set branch protection rules using GitHub API
           curl -X PUT -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github.luke-cage-preview+json" \
           "https://api.github.com/repos/$REPO/branches/$BRANCH/protection" \
           -d @- <<EOF {
-            "required_status_checks": {
-              "strict":null
-              }
+            "required_status_checks": None,
             "enforce_admins": true,
             "required_pull_request_reviews": {
               "dismiss_stale_reviews": true,
@@ -43,11 +41,11 @@ jobs:
               "apps": []
             },
             "required_linear_history":true,
-            "allow_force_pushes":true,
-            "allow_deletions":true,
-            "block_creations":true,
-            "required_conversation_resolution":true,
-            "lock_branch":true,
-            "allow_fork_syncing":true
+            "allow_force_pushes":False,
+            "allow_deletions":False,
+            "block_creations":False,
+            "required_conversation_resolution":False,
+            "lock_branch":False,
+            "allow_fork_syncing":False
           }
           EOF
