@@ -24,10 +24,9 @@ jobs:
           
           # Set branch protection rules using GitHub API
           curl -X PUT -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github.luke-cage-preview+json" \
-            "https://api.github.com/repos/$REPO/branches/$BRANCH/protection" \
-            -d @- <<EOF
-          {
+          -H "Accept: application/vnd.github.luke-cage-preview+json" \
+          "https://api.github.com/repos/$REPO/branches/$BRANCH/protection" \
+          -d @- <<EOF {
             "required_status_checks": {
               "strict":null
               }
