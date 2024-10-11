@@ -39,11 +39,6 @@ jobs:
               "users": [],
               "teams": []
             }
-            "required_linear_history":true,
             "allow_force_pushes":False,
-            "allow_deletions":False,
-            "block_creations":False,
-            "required_conversation_resolution":False,
-            "lock_branch":False,
-            "allow_fork_syncing":False    
+            "allow_deletions":False 
           }'
