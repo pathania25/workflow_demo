@@ -11,6 +11,16 @@ on:
       - '*'     
 
 jobs:
+  no-direct-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Direct Push to Main
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Direct push to main is not allowed. Please use a pull request.";
+            exit 1;
+          fi
+
   set-branch-protection:
     runs-on: ubuntu-latest
 
@@ -20,7 +30,7 @@ jobs:
               
       - name: Configure Branch Protection
         env:
-          GITHUB_TOKEN: ${{ github.token }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
         run: |
           REPO=${{ github.repository }}
@@ -29,7 +39,7 @@ jobs:
           
           # Set branch protection rules using GitHub API
           curl -X PUT \
-          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Authorization: token $TOKEN" \
           -H "Accept: application/vnd.github+json" \
           https://api.github.com/repos/{REPO}/branches/{BRANCH}/protection \
           -d '{
