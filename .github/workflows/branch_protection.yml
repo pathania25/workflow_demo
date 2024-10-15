@@ -25,6 +25,7 @@ jobs:
     - name: Authenticate GitHub CLI
       env:
         GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        REPO: ${{ github.repository }} 
       run: |
         gh auth login --with-token
 
@@ -32,7 +33,7 @@ jobs:
       run: |
         gh api --method PUT \
           -H "Accept: application/vnd.github.v3+json" \
-          /repos/${{ github.repository }}/branches/main/protection \
+          /repos/${REPO}/branches/main/protection \
           -f required_status_checks=null \
           -f enforce_admins=true \
           -f required_pull_request_reviews.dismiss_stale_reviews=false \
