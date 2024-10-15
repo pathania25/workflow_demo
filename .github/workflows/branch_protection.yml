@@ -27,7 +27,10 @@ jobs:
         echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
 
     - name: Apply branch protection rules for main
+      env:
+          REPO: ${{ github.repository }}
       run: |
+        echo "Using repository: $REPO"
         REPO=${{ github.repository }}
         gh api --method PUT \
         -H "Accept: application/vnd.github.v3+json" \
