@@ -38,6 +38,7 @@ jobs:
             fi
           done
 
+          # Report missing reviewers
           if [ ${#missing_reviewers[@]} -ne 0 ]; then
             echo "The following required reviewers are missing: ${missing_reviewers[*]}"
             exit 1  # Fail the job if any required reviewers are not present
