@@ -23,12 +23,8 @@ jobs:
         sudo apt-get install gh
 
     - name: Authenticate GitHub CLI
-      env:
-        REPO: ${{ github.repository }} 
-        GH_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
-        gh auth login --with-token  # Authenticate with the token
-        unset GH_TOKEN  # Clear the token after authentication
+        echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
 
     - name: Apply branch protection rules for main
       run: |
