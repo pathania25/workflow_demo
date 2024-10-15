@@ -28,7 +28,7 @@ jobs:
         REPO: ${{ github.repository }} 
       run: |
         gh auth login --with-token
-
+        unset GH_TOKEN  # Clear the token from the environment to avoid reuse
     - name: Apply branch protection rules for main
       run: |
         gh api --method PUT \
