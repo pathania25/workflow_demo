@@ -30,19 +30,6 @@ jobs:
           # Make sure the FINAL_REVIEWERS array is correctly formed
           echo "Final Reviewers Array: $FINAL_REVIEWERS"
 
-          # Check if all reviewers are collaborators
-          for reviewer in $(echo "$FINAL_REVIEWERS" | jq -r '.[]'); do
-          # Check if the reviewer is a collaborator
-          #  response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-          #    -H "Accept: application/vnd.github.v3+json" \
-          #    "https://api.github.com/repos/$REPO/collaborators/$reviewer")
-              
-          #  if [[ $(echo "$response" | jq -r '.message') == "Not Found" ]]; then
-          #    echo "Reviewer $reviewer is not a collaborator."
-          #    exit 1  # Fail the job if any reviewer is not a collaborator
-          #  fi
-          #done
-
           # Make API call to add reviewers
           response=$(curl -s -X POST \
             -H "Authorization: token $GITHUB_TOKEN" \
