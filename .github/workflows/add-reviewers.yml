@@ -13,10 +13,10 @@ jobs:
 
       - name: Set Reviewers and Add Reviewers
         env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # GitHub token for authentication
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub token for authentication
           REPO: ${{ github.repository }}               # Dynamic repository name (e.g., pathania25/workflow_demo)
           PR_NUMBER: ${{ github.event.pull_request.number }}  # Pull request number
-          GITHUB_REVIEWERS: pathania25,manasa-telus  # Comma-separated reviewer usernames
+          GITHUB_REVIEWERS: pathania25,manasa-telus,ravicharan-nettyam  # Comma-separated reviewer usernames
         run: |
           # Convert the comma-separated GITHUB_REVIEWERS into a JSON array
           REVIEWERS_ARRAY=$(echo "$GITHUB_REVIEWERS" | tr ',' '\n' | jq -R . | jq -s .)
