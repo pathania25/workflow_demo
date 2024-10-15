@@ -1,35 +1,26 @@
-name: Update GitHub Settings and Deploy
+name: Set Branch Protection Rules
 
 on:
-  workflow_dispatch:  # Allows manual triggering of the workflow
   push:
     branches:
-      - main  # Only trigger the deploy when changes are merged into the main branch
-  pull_request:
-    branches:
-      - main  # Trigger protection rule enforcement when PR is created or updated on main
+      - main
 
 jobs:
-  apply-settings:
-    name: Apply Branch Protection Rules
+  set-protection:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
+      - name: Checkout the repository
+        uses: actions/checkout@v2
 
-    - name: Install GitHub CLI
-      run: |
-        sudo apt-get install gh
-
-        - name: Authenticate GitHub CLI
+      - name: Authenticate GitHub CLI
         run: |
           echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
 
-    - name: Set Branch Protection Rules
-      env:
-        REPO: ${{ github.repository }}
-      run: |
+      - name: Set Branch Protection Rules
+        env:
+          REPO: ${{ github.repository }}
+        run: |
           echo "Using repository: $REPO"
           gh api --method PUT \
               -H "Accept: application/vnd.github.v3+json" \
