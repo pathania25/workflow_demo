@@ -2,7 +2,7 @@ name: Add Reviewers on PR Opened or Edited
 
 on:
   pull_request:
-    types: [opened, edited]  # Trigger on pull request opened or edited
+    types: [opened, edited, reopened, synchronize]  # Trigger on pull request opened or edited
 
 jobs:
   add-reviewers:
