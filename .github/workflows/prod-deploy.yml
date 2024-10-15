@@ -29,29 +29,36 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER")
           
-          # Extract requested reviewers
-          requested_reviewers=$(echo "$response" | jq -r '.requested_reviewers | map(.login) | .[]')
-          
-          # Debug: Print response and reviewers for troubleshooting
-          echo "Response: $response"
-          echo "Requested reviewers: $requested_reviewers"
+          # Extract requested reviewers and reviewers from the reviews API
+            requested_reviewers=$(echo "$response" | jq -r '.requested_reviewers | map(.login) | .[]')
+
+          # Fetch pull request reviews to check existing reviews
+            reviews_response=$(curl -s -H "Authorization: token $TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/reviews")
+
+          # Extract reviewers from reviews
+            reviewed_users=$(echo "$reviews_response" | jq -r '.[].user.login')
+
+          # Combine requested reviewers and reviewed users
+            all_reviewers="$requested_reviewers"$'\n'"$reviewed_users"
 
           # Check if required reviewers are present
-          required_reviewers=("pathania25" "manasa-telus" "ravicharan-nettyam")
-          missing_reviewers=()
+            required_reviewers=("pathania25" "manasa-telus" "ravicharan-nettyam")
+            missing_reviewers=()
 
-          for reviewer in "${required_reviewers[@]}"; do
-          if ! echo "$requested_reviewers" | grep -q "$reviewer"; then
-            missing_reviewers+=("$reviewer")
-          fi
+            for reviewer in "${required_reviewers[@]}"; do
+              if ! echo "$all_reviewers" | grep -q "$reviewer"; then
+               missing_reviewers+=("$reviewer")
+             fi
           done
 
-          if [ ${#missing_reviewers[@]} -ne 0 ]; then
-          echo "The following required reviewers are missing: ${missing_reviewers[*]}"
-          exit 1  # Fail the job if any required reviewers are not present
-          else
-          echo "All required reviewers are present."
-          fi
+              if [ ${#missing_reviewers[@]} -ne 0 ]; then
+              echo "The following required reviewers are missing: ${missing_reviewers[*]}"
+                exit 1  # Fail the job if any required reviewers are not present
+              else
+              echo "All required reviewers are present."
+              fi
 
   deploy:
     runs-on: ubuntu-latest
