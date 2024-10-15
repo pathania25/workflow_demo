@@ -2,6 +2,7 @@ name: Deploy to Production
 
 on:
   pull_request:
+    types: [opened, synchronize]
     branches:
       - main
 
@@ -58,4 +59,4 @@ jobs:
 
       - name: Deploy to Production
         run: |
-          echo "Deploying to production..."
+          echo "Deploying to production"
