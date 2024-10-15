@@ -1,22 +1,12 @@
 name: Setup Branch Protection Rules
 
 on:
+  workflow_dispatch:
   push:
     branches:
-      - main
-  workflow_dispatch:      
+      - main      
 
 jobs:
-  no-direct-push:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check for Direct Push to Main
-        run: |
-          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            echo "Direct push to main is not allowed. Please use a pull request.";
-            exit 1;
-          fi
-
   set-branch-protection:
     runs-on: ubuntu-latest
 
@@ -47,5 +37,18 @@ jobs:
                 "dismiss_stale_reviews": true,
                 "require_code_owner_reviews": true
               },
-              "restrictions": null
+              "restrictions": null,
+              "allow_force_pushes": false,
+              "allow_deletions": false
             }'
+  
+  no-direct-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Direct Push to Main
+        run: |
+          if [ "${{ github.event_name }}" = "push" ] && [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "Direct push to main is not allowed.";
+            exit 1;
+          fi
+          
