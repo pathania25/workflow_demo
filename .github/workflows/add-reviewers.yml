@@ -1,0 +1,40 @@
+name: Add Reviewers to PR
+
+on:
+  pull_request:
+    types: [opened, edited]  # Triggers when a pull request is opened or edited
+
+jobs:
+  add-reviewers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Add reviewers
+        env:
+          TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # GitHub token provided automatically in GitHub Actions
+        run: |
+          # Set the required reviewers
+          REVIEWERS="pathania25,manasa-telus,ravicharan-nettyam"
+          REPO=${{ github.repository }}
+          PR_NUMBER=${{ github.event.number }}  # Get the pull request number from the GitHub context
+
+          # Use the GitHub API to add reviewers
+          response=$(curl -s -X POST \
+            -H "Authorization: token $TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/requested_reviewers" \
+            -d "{\"reviewers\": [${REVIEWERS}]}" )
+
+          # Check if the request was successful
+          if [[ $(echo "$response" | jq -r '.message') == "Not Found" ]]; then
+            echo "Error: Could not find the pull request."
+            exit 1
+          elif [[ $(echo "$response" | jq -r '.message') == "Bad credentials" ]]; then
+            echo "Error: Invalid GitHub token."
+            exit 1
+          else
+            echo "Reviewers added successfully."
+          fi
