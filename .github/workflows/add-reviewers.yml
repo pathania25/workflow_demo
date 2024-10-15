@@ -11,14 +11,14 @@ jobs:
       - name: Add Reviewers
         id: add_reviewers
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use the GitHub token for authentication
+          TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use the GitHub token for authentication
           REPO: ${{ github.repository }}              # Repository name
           PR_NUMBER: ${{ github.event.pull_request.number }}  # Pull request number
           GITHUB_REVIEWERS: ${{ secrets.REVIEWERS }}  # Accessing the reviewers' secret
         run: |
           # Make API call to add reviewers
           response=$(curl -s -X POST \
-            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Authorization: token $TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/requested_reviewers" \
             -d "{\"reviewers\": [${GITHUB_REVIEWERS}]}")
@@ -29,7 +29,7 @@ jobs:
       - name: Check for Required Approvals
         run: |
           # Fetch pull request details to check for reviewers' approval
-          response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          response=$(curl -s -H "Authorization: token $TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER")
 
