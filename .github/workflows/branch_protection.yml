@@ -30,7 +30,7 @@ jobs:
               
       - name: Configure Branch Protection
         env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
           REPO: ${{ github.repository }}
           BRANCH: "main"
           REQUIRED_APPROVALS: 1
