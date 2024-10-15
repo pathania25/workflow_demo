@@ -16,20 +16,26 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # GitHub token for authentication
           REPO: ${{ github.repository }}               # Dynamic repository name (e.g., pathania25/workflow_demo)
           PR_NUMBER: ${{ github.event.pull_request.number }}  # Pull request number
-          GITHUB_REVIEWERS: pathania25,manasa-telus  # Comma-separated reviewer usernames
+          GITHUB_REVIEWERS: pathania25,manasa-telus,ravicharan-nettyam  # Comma-separated reviewer usernames
         run: |
           # Convert the comma-separated GITHUB_REVIEWERS into a JSON array
           REVIEWERS_ARRAY=$(echo "$GITHUB_REVIEWERS" | tr ',' '\n' | jq -R . | jq -s .)
 
-          # Make sure the REVIEWERS_ARRAY is correctly formed
-          echo "Reviewers Array: $REVIEWERS_ARRAY"
+          # Get the pull request author
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
+
+          # Exclude the author from the reviewers list
+          FINAL_REVIEWERS=$(echo "$REVIEWERS_ARRAY" | jq --arg author "$PR_AUTHOR" 'map(select(. != $author))')
+
+          # Make sure the FINAL_REVIEWERS array is correctly formed
+          echo "Final Reviewers Array: $FINAL_REVIEWERS"
 
           # Make API call to add reviewers
           response=$(curl -s -X POST \
             -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/$REPO/pulls/$PR_NUMBER/requested_reviewers" \
-            -d "{\"reviewers\": $REVIEWERS_ARRAY}")
+            -d "{\"reviewers\": $FINAL_REVIEWERS}")
 
           # Output the response for debugging
           echo "Response from adding reviewers: $response"
