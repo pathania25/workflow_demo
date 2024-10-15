@@ -16,7 +16,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # GitHub token for authentication
           REPO: ${{ github.repository }}               # Dynamic repository name (e.g., pathania25/workflow_demo)
           PR_NUMBER: ${{ github.event.pull_request.number }}  # Pull request number
-          GITHUB_REVIEWERS: pathania25,manasa-telus,ravicharan-nettyam  # Comma-separated reviewer usernames
+          GITHUB_REVIEWERS: pathania25,manasa-telus  # Comma-separated reviewer usernames
         run: |
           # Convert the comma-separated GITHUB_REVIEWERS into a JSON array
           REVIEWERS_ARRAY=$(echo "$GITHUB_REVIEWERS" | tr ',' '\n' | jq -R . | jq -s .)
@@ -29,6 +29,19 @@ jobs:
 
           # Make sure the FINAL_REVIEWERS array is correctly formed
           echo "Final Reviewers Array: $FINAL_REVIEWERS"
+
+          # Check if all reviewers are collaborators
+          for reviewer in $(echo "$FINAL_REVIEWERS" | jq -r '.[]'); do
+            # Check if the reviewer is a collaborator
+            response=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/$REPO/collaborators/$reviewer")
+              
+            if [[ $(echo "$response" | jq -r '.message') == "Not Found" ]]; then
+              echo "Reviewer $reviewer is not a collaborator."
+              exit 1  # Fail the job if any reviewer is not a collaborator
+            fi
+          done
 
           # Make API call to add reviewers
           response=$(curl -s -X POST \
