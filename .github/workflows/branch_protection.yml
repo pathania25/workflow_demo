@@ -28,6 +28,7 @@ jobs:
 
     - name: Apply branch protection rules for main
       run: |
+        REPO=${{ github.repository }}
         gh api --method PUT \
           -H "Accept: application/vnd.github.v3+json" \
           /repos/${REPO}/branches/main/protection \
