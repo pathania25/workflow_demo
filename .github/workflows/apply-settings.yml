@@ -1,9 +1,14 @@
 name: Manage GitHub Settings
 
 on:
+  workflow_dispatch:  # Allows manual triggering of the workflow
   push:
     branches:
       - main
+  
+  pull_request:
+    branches:
+      - main  # Trigger protection rule enforcement when PR is created or updated on main    
 
 jobs:
   configure-github-settings:
@@ -17,7 +22,7 @@ jobs:
     - name: Set up GitHub CLI
       uses: actions/setup-gh@v2
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
 
     - name: Configure Branch Protection Rules
       run: |
