@@ -26,8 +26,12 @@ jobs:
 
     - name: Assign reviewers from CODEOWNERS
       run: |
+        # Extracting the PR number and repository name
         PR_NUMBER=${{ github.event.pull_request.number }}
         REPO=${{ github.repository }}
+        
+        # Assigning reviewers from CODEOWNERS
+        echo "Assigning reviewers for PR #${PR_NUMBER} in repository ${REPO}..."
         gh pr review-request $PR_NUMBER --repo $REPO
 
     - name: Verify assigned reviewers
