@@ -1,10 +1,10 @@
 name: Manage GitHub Settings
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  #workflow_dispatch:  # This allows you to trigger it manually from the Actions tab.
 
 jobs:
   configure-github-settings:
@@ -18,7 +18,7 @@ jobs:
     - name: Set up GitHub CLI
       uses: actions/setup-gh@v2
       with:
-        token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Configure Branch Protection Rules
       run: |
@@ -35,19 +35,3 @@ jobs:
           -f restrictions.teams=[] \
           -f allow_force_pushes=false \
           -f allow_deletions=false
-
-    - name: Require PR Approvals
-      run: |
-        gh api --method PUT \
-          -H "Accept: application/vnd.github+json" \
-          /repos/${{ github.repository }}/branches/main/protection \
-          -f required_pull_request_reviews.required_approving_review_count=2 \
-          -f required_pull_request_reviews.require_code_owner_reviews=true
-
-    - name: Set Workflow Approval Requirement
-      run: |
-        gh api --method POST \
-          -H "Accept: application/vnd.github+json" \
-          /repos/${{ github.repository }}/environments/production/required_reviewers \
-          -f reviewers='["your-github-username"]'
-
