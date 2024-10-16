@@ -16,7 +16,7 @@ jobs:
       - name: Set up GitHub CLI
         uses: actions/setup-gh@v3
         with:
-          token: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # GitHub Token for authentication
+          token: ${{ secrets.GITHUB_TOKEN }} # GitHub Token for authentication
 
       - name: Apply branch protection rules to main
         run: |
