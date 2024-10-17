@@ -1,0 +1,50 @@
+name: Manage GitHub Settings
+
+on:
+  workflow_dispatch:  # Allows manual triggering of the workflow
+  push:
+    branches:
+      - main
+  
+  pull_request:
+    branches:
+      - main  # Trigger protection rule enforcement when PR is created or updated on main    
+
+jobs:
+  configure-github-settings:
+    name: Configure GitHub Settings
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    # Step 2: Install GitHub CLI
+    - name: Install GitHub CLI
+      run: |
+        sudo apt update
+        sudo apt install gh
+
+    # Step 3: Authenticate GitHub CLI using the GITHUB_TOKEN secret
+    - name: Authenticate GitHub CLI
+      run: |
+        echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
+
+    # Step 4: Example command to check authentication and GitHub status
+    - name: Verify GitHub authentication
+      run: gh auth status
+
+    - name: Configure Branch Protection Rules
+      run: |
+        gh api --method PUT \
+          /repos/${{ github.repository }}/branches/main/protection \
+          -f required_status_checks.strict=true \
+          -f required_status_checks.contexts=[] \
+          -f enforce_admins=true \
+          -f required_pull_request_reviews.dismiss_stale_reviews=false \
+          -f required_pull_request_reviews.require_code_owner_reviews=true \
+          -f required_pull_request_reviews.required_approving_review_count=1 \
+          -f restrictions.users=[] \
+          -f restrictions.teams=[] \
+          -f allow_force_pushes=false \
+          -f allow_deletions=false
