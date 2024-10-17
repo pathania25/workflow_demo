@@ -22,10 +22,8 @@ jobs:
           sudo apt-get install -y gh
 
       - name: Authenticate GitHub CLI
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          echo "$GITHUB_TOKEN" | gh auth login --with-token
+          echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
 
       - name: Assign reviewers from CODEOWNERS
         run: |
@@ -65,10 +63,8 @@ jobs:
           sudo apt-get install -y gh
 
       - name: Authenticate GitHub CLI
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         run: |
-          echo "$GITHUB_TOKEN" | gh auth login --with-token
+          echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
 
       - name: Check for PR approval
         run: |
