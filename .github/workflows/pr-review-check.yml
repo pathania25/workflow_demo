@@ -13,46 +13,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout the repository
-        uses: actions/checkout@v2
+    - name: Checkout the repository
+      uses: actions/checkout@v2
 
-      - name: Install GitHub CLI
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y gh
+    - name: Install GitHub CLI
+      run: |
+        sudo apt-get install -y gh
 
-      - name: Authenticate GitHub CLI
-        run: |
-          echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
+    - name: Authenticate GitHub CLI
+      run: |
+        echo "${{ secrets.PERSONAL_ACCESS_TOKEN }}" | gh auth login --with-token
 
-          - name: Extract reviewers from CODEOWNERS
-          id: extract-reviewers
-          run: |
-            # Extracting reviewers from the CODEOWNERS file
-            CODEOWNERS_PATH=".github/CODEOWNERS"
-            if [ -f "$CODEOWNERS_PATH" ]; then
-              REVIEWERS=$(grep -v '^#' "$CODEOWNERS_PATH" | awk '{print $NF}' | sort | uniq | tr '\n' ',' | sed 's/,$//')
-              echo "REVIEWERS=$REVIEWERS" >> $GITHUB_ENV
-            else
-              echo "CODEOWNERS file not found!"
-              exit 1
-            fi
-    
-      - name: Assign reviewers from CODEOWNERS
-        run: |
-           # Extracting the PR number and repository name
-            PR_NUMBER=${{ github.event.pull_request.number }}
-            REPO=${{ github.repository }}
-    
-            # Using reviewers from the CODEOWNERS file
-            echo "Assigning reviewers for PR #${PR_NUMBER} in repository ${REPO}..."
-            gh pr edit $PR_NUMBER --repo $REPO --add-reviewer ${{ env.REVIEWERS }}
-    
-      - name: Verify assigned reviewers
-        run: |
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          REPO=${{ github.repository }}
-          gh pr view $PR_NUMBER --repo $REPO --json reviewRequests --jq '.reviewRequests.nodes'
+    - name: Extract reviewers from CODEOWNERS
+      id: extract-reviewers
+      run: |
+        # Extracting reviewers from the CODEOWNERS file
+        CODEOWNERS_PATH=".github/CODEOWNERS"
+        if [ -f "$CODEOWNERS_PATH" ]; then
+          REVIEWERS=$(grep -v '^#' "$CODEOWNERS_PATH" | awk '{print $NF}' | sort | uniq | tr '\n' ',' | sed 's/,$//')
+          echo "REVIEWERS=$REVIEWERS" >> $GITHUB_ENV
+        else
+          echo "CODEOWNERS file not found!"
+          exit 1
+        fi
+      shell: /usr/bin/bash -e {0}
+
+    - name: Assign reviewers from CODEOWNERS
+      run: |
+        # Extracting the PR number and repository name
+        PR_NUMBER=${{ github.event.pull_request.number }}
+        REPO=${{ github.repository }}
+
+        # Using reviewers from the CODEOWNERS file
+        echo "Assigning reviewers for PR #${PR_NUMBER} in repository ${REPO}..."
+        gh pr edit $PR_NUMBER --repo $REPO --add-reviewer ${{ env.REVIEWERS }}
+
+    - name: Verify assigned reviewers
+      run: |
+        PR_NUMBER=${{ github.event.pull_request.number }}
+        REPO=${{ github.repository }}
+        gh pr view $PR_NUMBER --repo $REPO --json reviewRequests --jq '.reviewRequests.nodes'
 
   check-approval:
     runs-on: ubuntu-latest
