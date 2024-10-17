@@ -46,7 +46,7 @@ jobs:
       run: |
         PR_NUMBER=${{ github.event.pull_request.number }}
         REPO=${{ github.repository }}
-        gh pr edit $PR_NUMBER --repo $REPO --add-reviewer ${{ env.REVIEWERS }}
+        gh pr edit $PR_NUMBER --repo $REPO --add-reviewer ${{ env.PR_REVIEWERS }}
 
     - name: Verify assigned reviewers
       run: |
